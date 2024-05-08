@@ -21,7 +21,7 @@ int __cdecl main(int argc, char **argv)
 	char *ipaddr, str[512] = "Client connecting...\n";
 
 	// server's ip address for testing and debugging
-	char ipaddr_test[] = "140.118.199.150";
+	char ipaddr_test[] = "192.168.0.6";
 
 	// Validate the arguments
 	if (argc != 2) {

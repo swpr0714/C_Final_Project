@@ -27,25 +27,23 @@ SOCKET theSocket = INVALID_SOCKET;
 int client_connect(char * ipaddr) {
 	WSADATA wsaData;
 
-	struct addrinfo *result = NULL,
-		*ptr = NULL,
-		hints;
+	struct addrinfo *result = NULL, *ptr = NULL, hints;
 	int iResult;
 
 	// Initialize Winsock
-	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (iResult != 0) {
+	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);  //startup(version, &wsadata)
+	if (iResult != 0) {  //檢查開啟
 		printf("WSAStartup failed with error: %d\n", iResult);
 		return 1;
 	}
-
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
+	// hints 除了AI_Family, AI_Socktype, AI_Protocal和AI_Flags 其他應為0或NULL 所以先清空記憶體再設置 
+	ZeroMemory(&hints, sizeof(hints));  //清空記憶體
+	hints.ai_family = AF_INET;  // 使用IPv4協議
+	hints.ai_socktype = SOCK_STREAM; // 指定雙向數據流
+	hints.ai_protocol = IPPROTO_TCP; // 使用TCP協議
 
 	// Resolve the server address and port
-	iResult = getaddrinfo(ipaddr, DEFAULT_PORT, &hints, &result);
+	iResult = getaddrinfo(ipaddr, DEFAULT_PORT, &hints, &result); // Client應設置Addr及Port
 	if (iResult != 0) {
 		printf("getaddrinfo failed with error: %d\n", iResult);
 		WSACleanup();
@@ -55,8 +53,7 @@ int client_connect(char * ipaddr) {
 	// Attempt to connect to an address until one succeeds
 	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 		// Create a SOCKET for connecting to server
-		theSocket = socket(ptr->ai_family, ptr->ai_socktype,
-			ptr->ai_protocol);
+		theSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 		if (theSocket == INVALID_SOCKET) {
 			printf("socket failed with error: %ld\n", WSAGetLastError());
 			WSACleanup();
