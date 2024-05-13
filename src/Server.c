@@ -17,10 +17,18 @@ int main(){
                 continue;
             }
             printf("Received from Client %d: %s\n", i + 1, buffer);
+            if(buffer[0]=='@'){
+                printf("User shutdown:(\n");
+                goto ServerEnd;    
+            }
             // Echo back to the client
             send(client_sockets[i], buffer, strlen(buffer), 0);
             memset(buffer, 0, BUFFER_SIZE);
+            
         }
+
     }
+    ServerEnd:
+    WSACleanup();
     return 0;
 }

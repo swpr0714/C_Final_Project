@@ -7,33 +7,33 @@
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
-SOCKET client_setup() {
+SOCKET client_setup(char *serveraddr) {
     WSADATA wsa;
     SOCKET sock;
     struct sockaddr_in server;
     // Initialize Winsock
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
         printf("WSAStartup failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
-    // Create socket file descriptor
+    // Create Socket
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         printf("Socket creation failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
-
+    printf("Server IP: %s\n",serveraddr);
     // Initialize server address structure
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("140.118.187.96");
+    server.sin_addr.s_addr = inet_addr(serveraddr);
     server.sin_port = htons(PORT);
 
     // Connect to server
     if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
         printf("Connection Failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
-    printf("Connect!\n");
+    printf("Connect Successful!\n");
     return sock;
 }
 
@@ -48,13 +48,13 @@ SOCKET *server_setup() {
     // Initialize Winsock
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
         printf("WSAStartup failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
-    // Create socket file descriptor
+    // Create Socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         printf("Socket creation failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
     // Initialize server address structure
@@ -62,27 +62,30 @@ SOCKET *server_setup() {
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(PORT);
 
-    // Bind the socket to localhost port 8080
+    // Bind
     if (bind(server_fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
         printf("Bind failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
-    // Listen for incoming connections
+    // Listen
     if (listen(server_fd, 3) == SOCKET_ERROR) {
         printf("Listen failed.\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
     printf("Server listening on port %d\n", PORT);
 
-    // Accept incoming connections
+    // Accept
     for (int i = 0; i < max_clients; ++i) {
         if ((client_sockets[i] = accept(server_fd, (struct sockaddr *)&client, &addrlen)) == INVALID_SOCKET) {
             printf("Accept failed.\n");
-            exit(EXIT_FAILURE);
+            exit(-1);
+        }
+        else{
+            printf("User %d Connect!\n",i+1);
         }
     }
-    printf("Connect!\n");
+    printf("Connect Successful!\n");
     return client_sockets;
 }
