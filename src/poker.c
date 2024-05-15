@@ -7,9 +7,22 @@ void swap(int *cardA, int *cardB){
     *cardA = *cardB;
     *cardB = temp;
 }
-int cmpfunc(const void *a, const void *b){
-    return (*(int*)a - *(int*)b);
-}
+void quickSort(int *number, int left, int right) { 
+    if(left < right) { 
+        int s = number[(left+right)/2]; 
+        int i = left - 1; 
+        int j = right + 1; 
+        while(1) { 
+            while(number[++i] < s) ;  
+            while(number[--j] > s) ;  
+            if(i >= j) 
+                break; 
+            swap(&number[i], &number[j]); 
+        } 
+        quickSort(number, left, i-1);   
+        quickSort(number, j+1, right); 
+    } 
+} 
 int **shuffle(void){
     srand(time(NULL));
     int *card = (int*)malloc(52*sizeof(int));
@@ -27,8 +40,8 @@ int **shuffle(void){
     retcard[1] = &card[26];
 
     // Sorting
-    qsort((void*)card[0], 26, sizeof(int), cmpfunc);
-    // qsort((void*)card[1], 26, sizeof(int), cmpfunc);
+    quickSort(retcard[0],0,26);
+    quickSort(retcard[1],0,26);
     return retcard;
 }
 void printcard(int *card, int size){
@@ -77,8 +90,8 @@ void printcard(int *card, int size){
 int main(){
     int **card;
     card = shuffle();
-    // printf("A:\n");
-    // printcard(card[0],26);
-    // printf("\nB\n");
-    // printcard(card[1],26);
+    printf("A:\n");
+    printcard(card[0],26);
+    printf("\nB\n");
+    printcard(card[1],26);
 }
