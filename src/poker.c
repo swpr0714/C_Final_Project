@@ -22,7 +22,7 @@ void quickSort(int *number, int left, int right) {
         quickSort(number, left, i-1);   
         quickSort(number, j+1, right); 
     } 
-} 
+}
 int **shuffle(void){
     srand(time(NULL));
     int *card = (int*)malloc(52*sizeof(int));
@@ -44,54 +44,52 @@ int **shuffle(void){
     quickSort(retcard[1],0,26);
     return retcard;
 }
-void printcard(int *card, int size){
+void printNum(int num){
+    switch (num/4+3)
+            {
+            case 15:
+                printf("2\t");
+                break;
+            case 14:
+                printf("A\t");
+                break;
+            case 13:
+                printf("K\t");
+                break;
+            case 12:
+                printf("Q\t");
+                break;
+            case 11:
+                printf("J\t");
+                break;
+            default:
+                printf("%d\t", num/4+3);
+                break;
+            }
+}
+void printCard(int *card, int size){
     for(int i=0;i<size; i++){
         switch (card[i]%4)
         {
         case 0:
-            if (card[i]/4+3==15){printf("Clever  2\t");}
-            else if (card[i]/4+3==14) {printf("Clever  A\t");}
-            else if (card[i]/4+3==11) {printf("Clever  J\t");}
-            else if (card[i]/4+3==12) {printf("Clever  Q\t");}
-            else if (card[i]/4+3==13) {printf("Clever  K\t");}
-            else{printf("Clever %2d\t", card[i]/4+3);}
+            printf("Clever  ");
+            printNum(card[i]);
             break;
         case 1:
-            if (card[i]/4+3==15){printf("Club    2\t");}
-            else if (card[i]/4+3==14) {printf("Club    A\t");}
-            else if (card[i]/4+3==11) {printf("Club    J\t");}
-            else if (card[i]/4+3==12) {printf("Club    Q\t");}
-            else if (card[i]/4+3==13) {printf("Club    K\t");}
-            else{printf("Club   %2d\t", card[i]/4+3);}
+            printf("Club    ");
+            printNum(card[i]);
             break;
         case 2:
-            if (card[i]/4+3==15){printf("Heart   2\t");}
-            else if (card[i]/4+3==14) {printf("Heart   A\t");}
-            else if (card[i]/4+3==11) {printf("Heart   J\t");}
-            else if (card[i]/4+3==12) {printf("Heart   Q\t");}
-            else if (card[i]/4+3==13) {printf("Heart   K\t");}
-            else{printf("Heart  %2d\t", card[i]/4+3);}
+            printf("Heart   ");
+            printNum(card[i]);
             break;
         case 3:
-            if (card[i]/4+3==15){printf("Blade   2\t");}
-            else if (card[i]/4+3==14) {printf("Blade   A\t");}
-            else if (card[i]/4+3==11) {printf("Blade   J\t");}
-            else if (card[i]/4+3==12) {printf("Blade   Q\t");}
-            else if (card[i]/4+3==13) {printf("Blade   K\t");}
-            else{printf("Blade  %2d\t", card[i]/4+3);}
+            printf("Blade   ");
+            printNum(card[i]);
             break;
         default:
             break;
         }
         if ((i+1)%5==0){printf("\n");}
     }
-}
-
-int main(){
-    int **card;
-    card = shuffle();
-    printf("A:\n");
-    printcard(card[0],26);
-    printf("\nB\n");
-    printcard(card[1],26);
 }
