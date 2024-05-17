@@ -93,3 +93,39 @@ void printCard(int *card, int size){
         if ((i+1)%5==0){printf("\n");}
     }
 }
+int int2str(int *card, char *buf){
+    memset(buf,0,sizeof(buf));
+    for (int i = 0; i < 26; i++) {
+        char temp[10];
+        sprintf(temp, "%d", card[i]);
+        strcat(buf, temp);
+        if (i < 25) {
+            strcat(buf, " ");
+        }
+    }
+    return 0;
+}
+int str2int(int *card, char *buf){
+    int i = 0;
+    char *token = strtok(buf, " ");
+    while (token != NULL) {
+        card[i++] = atoi(token);
+        token = strtok(NULL, " ");
+    }
+    return 0;
+}
+
+// int main(){
+//     char buf[128] = {'\0'};
+//     int **card;
+//     card = shuffle();
+//     int client_card[26];
+//     int2str(card[0],buf);
+//     printf("Server: %s",buf);
+//     str2int(client_card,buf);
+//     printf("\nClient: ");
+//     for(int j=0; j<26;j++){
+//         printf("%d",client_card[j]);
+//         if(j!=25){printf(" ");}
+//     }
+// }
