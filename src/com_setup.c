@@ -7,6 +7,10 @@
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
+
+SOCKET g_server_fd;
+SOCKET *g_client_sockets; 
+
 SOCKET client_setup(char *serveraddr) {
     WSADATA wsa;
     SOCKET sock;
@@ -37,10 +41,9 @@ SOCKET client_setup(char *serveraddr) {
     return sock;
 }
 
-SOCKET *server_setup() {
+int *server_setup() {
     WSADATA wsa;
-    SOCKET server_fd;
-    SOCKET *client_sockets = (SOCKET*) malloc(MAX_CLIENTS * sizeof(SOCKET));
+    g_client_sockets = (SOCKET*) malloc(MAX_CLIENTS * sizeof(SOCKET));
     struct sockaddr_in server, client;
     int addrlen = sizeof(struct sockaddr_in);
     int max_clients = MAX_CLIENTS;
@@ -52,7 +55,7 @@ SOCKET *server_setup() {
     }
 
     // Create Socket
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+    if ((g_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         printf("Socket creation failed.\n");
         exit(-1);
     }
@@ -63,13 +66,13 @@ SOCKET *server_setup() {
     server.sin_port = htons(PORT);
 
     // Bind
-    if (bind(server_fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
+    if (bind(g_server_fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
         printf("Bind failed.\n");
         exit(-1);
     }
 
     // Listen
-    if (listen(server_fd, 3) == SOCKET_ERROR) {
+    if (listen(g_server_fd, 3) == SOCKET_ERROR) {
         printf("Listen failed.\n");
         exit(-1);
     }
@@ -78,7 +81,7 @@ SOCKET *server_setup() {
 
     // Accept
     for (int i = 0; i < max_clients; ++i) {
-        if ((client_sockets[i] = accept(server_fd, (struct sockaddr *)&client, &addrlen)) == INVALID_SOCKET) {
+        if ((g_client_sockets[i] = accept(g_server_fd, (struct sockaddr *)&client, &addrlen)) == INVALID_SOCKET) {
             printf("Accept failed.\n");
             exit(-1);
         }
@@ -87,5 +90,5 @@ SOCKET *server_setup() {
         }
     }
     printf("Connect Successful!\n");
-    return client_sockets;
+    return 0;
 }
