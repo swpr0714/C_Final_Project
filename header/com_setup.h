@@ -7,5 +7,7 @@
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
-SOCKET *server_setup();
+extern SOCKET g_server_fd;
+extern SOCKET *g_client_sockets; 
+int *server_setup();
 SOCKET client_setup();
