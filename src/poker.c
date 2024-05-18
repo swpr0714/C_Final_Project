@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <winsock2.h>
+/* General */
 void swap(int *cardA, int *cardB){
     int temp = *cardA;
     *cardA = *cardB;
@@ -23,27 +25,8 @@ void quickSort(int *number, int left, int right) {
         quickSort(number, j+1, right); 
     } 
 }
-int **shuffle(void){
-    srand(time(NULL));
-    int *card = (int*)malloc(52*sizeof(int));
-    int **retcard = (int**)malloc(2*sizeof(int*));
-    for(int i=0;i<52;i++){
-        card[i]=i;
-    }
-    // Fisher Yates
-    for(int N = 51; N>1; N--){
-        int X = rand()%N;
-        swap(&card[X], &card[N]);
-    }
-    // Dealing
-    retcard[0] = &card[0];
-    retcard[1] = &card[26];
 
-    // Sorting
-    quickSort(retcard[0],0,26);
-    quickSort(retcard[1],0,26);
-    return retcard;
-}
+/* Client */
 void printNum(int num){
     switch (num/4+3)
             {
@@ -113,6 +96,48 @@ int str2int(int *card, char *buf){
         token = strtok(NULL, " ");
     }
     return 0;
+}
+
+/* Server */
+int **shuffle(void){
+    srand(time(NULL));
+    int *card = (int*)malloc(52*sizeof(int));
+    int **retcard = (int**)malloc(2*sizeof(int*));
+    for(int i=0;i<52;i++){
+        card[i]=i;
+    }
+    // Fisher Yates
+    for(int N = 51; N>1; N--){
+        int X = rand()%N;
+        swap(&card[X], &card[N]);
+    }
+    // Dealing
+    retcard[0] = &card[0];
+    retcard[1] = &card[26];
+
+    // Sorting
+    quickSort(retcard[0],0,26);
+    quickSort(retcard[1],0,26);
+    return retcard;
+}
+int findOrder(int **card, SOCKET *sock){
+    int user = 0;
+    // Default user 1 has clever 3
+    // Check if user 2 has clever 3
+    for(int i = 0; i <26; i++){
+        if(card[1][i] == 0){
+            user = 1;
+        }
+    }
+    if(user){
+        SOCKET socktemp = sock[0];
+        sock[0] = sock[1];
+        sock[1] = socktemp;
+        int *cardtemp = card[0];
+        card[0] = card[1];
+        card[1] = cardtemp; 
+    }
+    return user;
 }
 
 // int main(){

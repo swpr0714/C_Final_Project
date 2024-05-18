@@ -1,42 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-#include "com_setup.h"
-#include "poker.h"
+#include "..\header\com_setup.h"
+#include "..\header\poker.h"
+
+
+
 int main(){
-    char buffer[BUFFER_SIZE] = {0};
+    // Connect
     SOCKET *client_sockets = server_setup();
-    // Communication loop
-    // while (1) {
-    //     for (int i = 0; i < MAX_CLIENTS; ++i) {
-    //         int valread = recv(client_sockets[i], buffer, BUFFER_SIZE, 0);
-    //         if (valread == 0) {
-    //             printf("Client %d disconnected\n", i + 1);
-    //             closesocket(client_sockets[i]);
-    //             client_sockets[i] = 0;
-    //             continue;
-    //         }
-    //         printf("Received from Client %d: %s\n", i + 1, buffer);
-    //         if(buffer[0]=='@'){
-    //             printf("User shutdown:(\n");
-    //             goto ServerEnd;    
-    //         }
-    //         // Echo back to the client
-    //         send(client_sockets[i], buffer, strlen(buffer), 0);
-    //         memset(buffer, 0, BUFFER_SIZE);
-    //     }
-    // }
-    printf("Enter anykey to send: ");
-    char a;
-    scanf(" %c", &a);
-    int **card;
-    card = shuffle();
-    
-    int2str(card[0],buffer);
+    Sleep(300);
+    // Declare variables
+    int **card = shuffle();
+    findOrder(card,client_sockets);
+    // Game start
+    char buffer[BUFFER_SIZE] = "Game Start :D";
+    Sleep(50);
     send(client_sockets[0], buffer, strlen(buffer), 0);
+    send(client_sockets[1], buffer, strlen(buffer), 0);
+    memset(buffer, 0, sizeof(buffer));
+    // Deal
+    Sleep(1200);
+
+    int2str(card[0],buffer);
+    printf("User 1 card: %s\n",buffer);
+    send(client_sockets[0], buffer, strlen(buffer), 0);
+
     memset(buffer, 0, BUFFER_SIZE);
     int2str(card[1],buffer);
+    printf("User 2 card: %s\n",buffer);
     send(client_sockets[1], buffer, strlen(buffer), 0);
+    memset(buffer, 0, BUFFER_SIZE);
+
+    // strcat(buffer,"Your are user 1");
+    // Sleep(50);
+    // send(client_sockets[0], buffer, strlen(buffer), 0);
+    // memset(buffer, 0, BUFFER_SIZE);
+    // strcat(buffer,"Your are user 2");
+    // Sleep(50);
+    // send(client_sockets[1], buffer, strlen(buffer), 0);
+    
     ServerEnd:
     WSACleanup();
     return 0;

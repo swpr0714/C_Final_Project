@@ -2,40 +2,37 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #include <windows.h>
-#include "com_setup.h"
-#include "poker.h"
+#include "..\header\com_setup.h"
+#include "..\header\poker.h"
 int main(){
-    char buffer[BUFFER_SIZE] = {0};
-    char *serveraddr = "172.20.10.4";
+    // Connect to server
+    char *serveraddr = "192.168.0.21";
     SOCKET sock = client_setup(serveraddr);  
+    //Declare Variable
     int status; 
-    // Communication loop
-    // while (1) {
-    //     printf("Enter a message: ");
-    //     fgets(buffer, BUFFER_SIZE, stdin);
-    //     // Send message to server
-    //     status = send(sock, buffer, strlen(buffer), 0);
-    //     if(status==SOCKET_ERROR) {
-    //         printf("ERROR: Server No Response\n");
-    //         break;
-    //     }
-    //     if(buffer[0]=='@'){
-    //         printf("Shutdown :)\n");
-    //         break;
-    //     }
-    //     memset(buffer, 0, BUFFER_SIZE);
-    //     // Receive message from server
-    //     status = recv(sock, buffer, BUFFER_SIZE, 0);
-    //     printf("Server response: %s\n", buffer);
-    // }
+    char buffer[BUFFER_SIZE] = {0};
     int client_card[26];
-    printf("Waiting for message...\n");
+    // Wait for dealing
+    printf("Wait for other players...\n");
     status = recv(sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive."); exit(-1);}
-    system("cls");
-    // printf("%s",buffer);
+    cls;
+    printf("%s\n",buffer);
+    memset(buffer,0,sizeof(buffer));
+    Sleep(800);
+    cls;
+    printf("Your deck:\n");
+    // Recv card (Can be packged as a function)
+    status = recv(sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){printf("Failed to receive card."); exit(-1);}
     str2int(client_card,buffer);
+    memset(buffer,0,sizeof(buffer));
+    // Print card
     printCard(client_card,26);
+    //
+    // status = recv(sock,buffer,BUFFER_SIZE,0);
+    // if(status==SOCKET_ERROR){printf("Failed to receive card."); exit(-1);}
+    // printf("%s\n",buffer);
     // Close socket
     closesocket(sock);
     WSACleanup();
