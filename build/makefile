@@ -1,5 +1,4 @@
 All: Server_DBG Client_DBG
-	cls
 	ECHO "Buildup Complete."
 ENV:
 	..\Local\ENV.bat
