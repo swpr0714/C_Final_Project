@@ -4,37 +4,44 @@
 #include <windows.h>
 #include "..\header\com_setup.h"
 #include "..\header\poker.h"
+
+SOCKET g_sock;
+
+int recvCard(int *client_card, char *buffer){
+    int status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
+    str2int(client_card,buffer);
+    memset(buffer,0,sizeof(buffer));
+    return 0;
+}
+
 int main(){
     // Connect to server
     char *serveraddr = "192.168.0.21";
-    SOCKET sock = client_setup(serveraddr);  
+    g_sock = client_setup(serveraddr);  
     //Declare Variable
-    int status; 
+    int status = 0; 
     char buffer[BUFFER_SIZE] = {0};
     int client_card[26];
     // Wait for dealing
     printf("Wait for other players...\n");
-    status = recv(sock,buffer,BUFFER_SIZE,0);
+    // Game start
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive."); exit(-1);}
     cls;
     printf("%s\n",buffer);
     memset(buffer,0,sizeof(buffer));
     Sleep(800);
     cls;
+    // Deal
     printf("Your deck:\n");
     // Recv card (Can be packged as a function)
-    status = recv(sock,buffer,BUFFER_SIZE,0);
-    if(status==SOCKET_ERROR){printf("Failed to receive card."); exit(-1);}
-    str2int(client_card,buffer);
-    memset(buffer,0,sizeof(buffer));
+    status = recvCard(client_card,buffer);
+    if(status!=0){printf("Deal ERROR.\n", status);return -1;}
     // Print card
     printCard(client_card,26);
-    //
-    // status = recv(sock,buffer,BUFFER_SIZE,0);
-    // if(status==SOCKET_ERROR){printf("Failed to receive card."); exit(-1);}
-    // printf("%s\n",buffer);
     // Close socket
-    closesocket(sock);
+    closesocket(g_sock);
     WSACleanup();
     return 0;
 }
