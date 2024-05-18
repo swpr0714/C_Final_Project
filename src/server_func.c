@@ -18,12 +18,21 @@ int sendCard(int **card, char *buffer){
     return 0;
 }
 int recvType(int i, char *buffer){
-    Sleep(2000);
+    Sleep(1000);
     memset(buffer, 0, sizeof(buffer));
     strcat(buffer,"@");
     send(g_client_sockets[i], buffer, strlen(buffer), 0);
     int status = recv(g_client_sockets[i],buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive type.\n"); return 1;}
-    printf("Card mode is %s.",buffer);
+    printf("Card mode is %s.\n",buffer);
+    return 0;
+}
+int serverShutdown(){
+    printf("Closing...\n");
+    closesocket(g_client_sockets[0]);
+    closesocket(g_client_sockets[1]);
+    closesocket(g_server_fd);
+    WSACleanup();
+    printf("System has shutdown.\n");
     return 0;
 }

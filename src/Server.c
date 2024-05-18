@@ -27,10 +27,6 @@ int main(){
     if (status!=0){printf("Deal ERROR with code %d.\n", status);return -1;}
 
     recvType(0, buffer);
-    ServerEnd:
-    closesocket(g_client_sockets[0]);
-    closesocket(g_client_sockets[1]);
-    closesocket(g_server_fd);
-    WSACleanup();
+    serverShutdown();
     return 0;
 }
