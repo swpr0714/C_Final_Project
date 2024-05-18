@@ -7,6 +7,25 @@
 #pragma warning(disable:4700)
 #define BUFFER_SIZE 1024
 SOCKET g_sock;
+int firstGetCard(char *buffer, int *client_card){
+    int status = 0;
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){printf("Failed to receive."); exit(-1);}
+    cls;
+    printf("%s\n",buffer);
+    memset(buffer,0,sizeof(buffer));
+    Sleep(800);
+    cls;
+    // Deal
+    printf("Your deck:\n");
+    // Recv card (Can be packged as a function)
+    status = recvCard(client_card,buffer);
+    if(status!=0){printf("Deal ERROR.\n", status);return -1;}
+    // Print card
+    printCard(client_card,26);
+    return 0;
+
+}
 int recvCard(int *client_card, char *buffer){
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
@@ -39,8 +58,9 @@ int chooseType(char *buffer, int *card){
     status = send(g_sock, buffer, strlen(buffer),0);
     if(status==SOCKET_ERROR){
         printf("Failed to choose type.\n");
-        return(1);
+        return 1;
     }
+    return 0;
     // switch(atoi(input)){
     //     case 1:
     //         break;
@@ -60,4 +80,11 @@ int chooseType(char *buffer, int *card){
     //         break;
     // }
     // return 0;
+}
+int clientShutdown(){
+    printf("Closing...\n");
+    closesocket(g_sock);
+    WSACleanup();
+    printf("System has shutdown.\n");
+    return 0;
 }
