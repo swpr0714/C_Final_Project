@@ -1,3 +1,4 @@
+#pragma once
 #define cls system("cls")
 
 void swap(int *cardA, int *cardB);
