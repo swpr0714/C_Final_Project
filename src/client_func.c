@@ -12,7 +12,6 @@ int gameStart(char *buffer){
     status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive."); exit(-1);}
     cls;
-    printf("%s\n",buffer);
     memset(buffer,0,sizeof(buffer));
     Sleep(800);
     cls;
@@ -25,7 +24,7 @@ int getCard(char *buffer, int *client_card){
     // Recv card (Can be packged as a function)
     int status = recvCard(client_card,buffer);
     if(status!=0){
-        printf("Deal ERROR.\n", status);
+        printf("Deal ERROR.\n");
         return -1;
     }
     // Print card
@@ -35,8 +34,7 @@ int getCard(char *buffer, int *client_card){
 int recvCard(int *client_card, char *buffer){
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
-    printf("%s\n", buffer);
-    str2int(client_card,buffer);
+    if(str2int(client_card,buffer)){return 1;}
     memset(buffer,0,sizeof(buffer));
     return 0;
 }
@@ -53,8 +51,8 @@ int chooseType(char *buffer, int *card){
     printf("\t5. Four of a Kind\n");
     printf("\t6. Flush\n");
     printf("\t7. Skip\n");
-    printf("Please choose Hand Type: ");
     choosetype:
+    printf("Please choose Hand Type: ");
     scanf("%d", &input);
     if(input<1||input>7){
         printf("Please check your input.\n");
@@ -62,7 +60,7 @@ int chooseType(char *buffer, int *card){
     }
     memset(buffer, 0, sizeof(buffer));
     itoa(input,buffer,10);
-    status = send(g_sock, buffer, strlen(buffer),0);
+    status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to choose type.\n");
         return 1;
@@ -73,6 +71,7 @@ int chooseType(char *buffer, int *card){
             single(card,buffer);
             break;
         case 2:
+            pair(card, buffer);
             break;
         case 3:
             break;
@@ -106,7 +105,7 @@ int single(int *card, char *buffer){
     sprintf(temp, "%d", num-1);
     strcat(buffer,"-1 -1 -1 -1 ");
     strcat(buffer,temp);
-    int status = send(g_sock, buffer, strlen(buffer),0);
+    int status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to send card.\n");
         return 1;
@@ -122,5 +121,38 @@ int single(int *card, char *buffer){
         goto single_restart;
     }
     // printf("Recv\n");
+    return 0;
+}
+
+int pair(int *card, char *buffer){
+    int num1, num2;
+    char temp[5];
+    pair_restart:
+    clbuf;
+    printf("Please choose two card: ");
+    scanf("%d %d", &num1, &num2);
+    memset(buffer,0,sizeof(buffer));
+    sprintf(temp, "%d %d", num1-1, num2-1);
+    if(card[num1]/4 != card[num2]/4){
+        printf("Please choose again.\n");
+        goto pair_restart;
+    }
+    strcat(buffer,"-1 -1 -1 ");
+    strcat(buffer,temp);
+    int status = send(g_sock, buffer, BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Failed to send card.\n");
+        return 1;
+    }
+    memset(buffer,0,sizeof(buffer));
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Server No Response.\n");
+        return 1;
+    }
+    if(buffer[0]!='*'){
+        printf("Please choose again.\n");
+        goto pair_restart;
+    }
     return 0;
 }

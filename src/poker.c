@@ -94,9 +94,12 @@ int int2str(int *card, char *buf){
 }
 int str2int(int *card, char *buf){
     int i = 0;
+    int temp;
     char *token = strtok(buf, " ");
     while (token != NULL) {
-        card[i++] = atoi(token);
+        temp = atoi(token);
+        if(temp<-1){return 1;}
+        card[i++] = temp;
         token = strtok(NULL, " ");
     }
     return 0;

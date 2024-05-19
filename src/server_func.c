@@ -9,7 +9,7 @@ int sendCard(int **card, char *buffer, int client){
     int status = 0;
     clbuf;
     int2str(card[client],buffer);
-    status = send(g_client_sockets[client], buffer, strlen(buffer), 0);
+    status = send(g_client_sockets[client], buffer, BUFFER_SIZE, 0);
     if (status == SOCKET_ERROR){return 1;}
     clbuf;
     return 0;
@@ -18,7 +18,7 @@ int recvType(int i, char *buffer){
     Sleep(1000);
     memset(buffer, 0, sizeof(buffer));
     strcat(buffer,"@");
-    send(g_client_sockets[i], buffer, strlen(buffer), 0);
+    send(g_client_sockets[i], buffer, BUFFER_SIZE, 0);
     int status = recv(g_client_sockets[i],buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive type.\n"); return 1;}
     printf("Card mode is %s.\n",buffer);
@@ -39,22 +39,27 @@ int recvCard(int client, char *buffer, int **card, int *prev_card){
     int cardset[5];
     int status = recv(g_client_sockets[client],buffer,BUFFER_SIZE,0);
     printf("RECV: %s\n",buffer);
-    str2int(cardset,buffer);
+    status = str2int(cardset,buffer);
+    if(status!=0){
+        printf("Recv ERROR.\n");
+        return -1;
+    }
+    printf("%s\n", buffer);
     clbuf;
     strcat(buffer, "*");
-    send(g_client_sockets[client], buffer, strlen(buffer),0);
-    // quickSort(cardset,0,5);
-    for(int i=0;i<5;i++){
-        printf("%d ", cardset[i]);
-    }
+    send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
+    quickSort(cardset,0,5);
     if (cardset[4] < prev_card[4]){
         printf("Card set is smaller than previous.\n");
         return 1;
     }
+    printf("Prev: ");
     for(int i=0;i<5;i++){
-        prev_card[i]=cardset[i];
-        if(cardset[i]==-1){continue;}
+        if(cardset[i]==-1){prev_card[i]=-1;continue;}
+        prev_card[i] = card[client][cardset[i]];
+        printf("%d ", prev_card[i]);
         card[client][cardset[i]]=-1;
+        if(i==4){printf("\n");}
     }
     printf("Success.\n");
     return 0;

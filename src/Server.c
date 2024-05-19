@@ -30,9 +30,6 @@ int main(){
     recvType(0, buffer);
     recvCard(0,buffer,card,prev_card);
     sendCard(card,buffer,0);
-    for(int i = 0; i <5; i++){
-        printf("%d ", prev_card[i]);
-    }
     serverShutdown();
     return 0;
 }
