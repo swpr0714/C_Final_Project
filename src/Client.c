@@ -19,9 +19,11 @@ int main(){
     // Wait for dealing
     printf("Wait for other players...\n");
     // Game start
-    firstGetCard(buffer,client_card);
+    gameStart(buffer);
+    getCard(buffer,client_card);
     chooseType(buffer,client_card);
-
+    cls;
+    getCard(buffer,client_card);
 
     // Close socket
     clientShutdown();
