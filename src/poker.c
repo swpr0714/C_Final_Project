@@ -31,22 +31,22 @@ void printNum(int num){
     switch (num/4+3)
             {
             case 15:
-                printf("2\t");
+                printf(" 2 |\t");
                 break;
             case 14:
-                printf("A\t");
+                printf(" A |\t");
                 break;
             case 13:
-                printf("K\t");
+                printf(" K |\t");
                 break;
             case 12:
-                printf("Q\t");
+                printf(" Q |\t");
                 break;
             case 11:
-                printf("J\t");
+                printf(" J |\t");
                 break;
             default:
-                printf("%d\t", num/4+3);
+                printf("%2d |\t", num/4+3);
                 break;
             }
 }
@@ -55,26 +55,30 @@ void printCard(int *card, int size){
         switch (card[i]%4)
         {
         case 0:
-            printf("Clever  ");
+            printf("%2d. Clever ", i+1);
             printNum(card[i]);
             break;
         case 1:
-            printf("Club    ");
+            printf("%2d. Club   ", i+1);
             printNum(card[i]);
             break;
         case 2:
-            printf("Heart   ");
+            printf("%2d. Heart  ", i+1);
             printNum(card[i]);
             break;
         case 3:
-            printf("Blade   ");
+            printf("%2d. Blade  ", i+1);
             printNum(card[i]);
+            break;
+        case -1:
+            printf("              |\t");
             break;
         default:
             break;
         }
         if ((i+1)%5==0){printf("\n");}
     }
+    printf("\n");
 }
 int int2str(int *card, char *buf){
     memset(buf,0,sizeof(buf));
