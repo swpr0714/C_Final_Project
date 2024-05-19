@@ -5,6 +5,7 @@
 #define PORT 8080
 #define BUFFER_SIZE 1024
 #define MAX_CLIENTS 2
+#define clbuf memset(buffer, 0, BUFFER_SIZE)
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
