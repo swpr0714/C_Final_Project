@@ -35,32 +35,40 @@ int serverShutdown(){
 }
 
 int recvCard(int client, char *buffer, int **card, int *prev_card){
-    clbuf;
     int cardset[5];
+    clbuf;
     int status = recv(g_client_sockets[client],buffer,BUFFER_SIZE,0);
-    printf("RECV: %s\n",buffer);
-    status = str2int(cardset,buffer);
-    if(status!=0){
+    if(status==SOCKET_ERROR){
         printf("Recv ERROR.\n");
         return -1;
     }
-    printf("%s\n", buffer);
+    printf("RECV: %s\n",buffer);
+    status = str2int(cardset,buffer);
+    // printf("Buffer: %s\n", buffer);
+    printf("Cardset: ");
+    for(int i=0;i<5;i++){
+        printf("%d ", cardset[i]);
+    }
+    printf("\n");
     clbuf;
     strcat(buffer, "*");
     send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
-    quickSort(cardset,0,5);
+    Sort(cardset,5);
     if (cardset[4] < prev_card[4]){
         printf("Card set is smaller than previous.\n");
         return 1;
     }
     printf("Prev: ");
     for(int i=0;i<5;i++){
-        if(cardset[i]==-1){prev_card[i]=-1;continue;}
-        prev_card[i] = card[client][cardset[i]];
+        if(cardset[i]==-1){
+            prev_card[i]=-1;
+        }
+        else{
+            prev_card[i] = card[client][cardset[i]];
+        }
         printf("%d ", prev_card[i]);
-        card[client][cardset[i]]=-1;
-        if(i==4){printf("\n");}
     }
+    printf("\n");
     printf("Success.\n");
     return 0;
 }

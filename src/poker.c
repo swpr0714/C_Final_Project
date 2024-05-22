@@ -9,21 +9,14 @@ void swap(int *cardA, int *cardB){
     *cardA = *cardB;
     *cardB = temp;
 }
-void quickSort(int *number, int left, int right) { 
-    if(left < right) { 
-        int s = number[(left+right)/2]; 
-        int i = left - 1; 
-        int j = right + 1; 
-        while(1) { 
-            while(number[++i] < s) ;  
-            while(number[--j] > s) ;  
-            if(i >= j) 
-                break; 
-            swap(&number[i], &number[j]); 
-        } 
-        quickSort(number, left, i-1);   
-        quickSort(number, j+1, right); 
-    } 
+void Sort(int *arr, int size) {
+    for(int i=0; i<size; i++) {
+        for(int j=i+1; j<size; j++) {
+            if(arr[i]>arr[j]){
+                swap(&arr[i], &arr[j]);
+            }
+        }
+    }
 }
 
 /* Client */
@@ -83,13 +76,14 @@ void printCard(int *card, int size){
 int int2str(int *card, char *buf){
     memset(buf,0,sizeof(buf));
     for (int i = 0; i < 26; i++) {
-        char temp[10];
+        char temp[3];
         sprintf(temp, "%d", card[i]);
         strcat(buf, temp);
         if (i < 25) {
             strcat(buf, " ");
         }
     }
+    // printf("int2str: %s\n", buf);
     return 0;
 }
 int str2int(int *card, char *buf){
@@ -107,30 +101,27 @@ int str2int(int *card, char *buf){
 
 /* Server */
 int **shuffle(void){
-    srand(time(NULL));
-    int *card = (int*)malloc(52*sizeof(int));
+    int *card = (int*)calloc(52,sizeof(int));
     int **retcard = (int**)malloc(2*sizeof(int*));
     for(int i=0;i<52;i++){
         card[i]=i;
     }
     // Fisher Yates
-    for(int N = 51; N>1; N--){
-        int X = rand()%N;
+    for(int N = 50; N>0; N--){
+        int X = rand()%(N+1);
         swap(&card[X], &card[N]);
     }
+    
     // Dealing
     retcard[0] = &card[0];
     retcard[1] = &card[26];
-
     // Sorting
-    quickSort(retcard[0],0,26);
-    quickSort(retcard[1],0,26);
+    Sort(retcard[0],26);
+    Sort(retcard[1],26);
     return retcard;
 }
 int findOrder(int **card, SOCKET *sock){
     int user = 0;
-    // Default user 1 has clever 3
-    // Check if user 2 has clever 3
     for(int i = 0; i <26; i++){
         if(card[1][i] == 0){
             user = 1;

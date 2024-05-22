@@ -5,6 +5,7 @@
 #include "..\header\poker.h"
 #include "..\header\server_func.h"
 int main(){
+    srand(time(NULL));
     int prev_card[5]={-1,-1,-1,-1,-1};
     extern SOCKET g_server_fd;
     extern SOCKET *g_client_sockets; 
@@ -29,7 +30,9 @@ int main(){
     //Player 1 playing
     recvType(0, buffer);
     recvCard(0,buffer,card,prev_card);
-    sendCard(card,buffer,0);
+    if(sendCard(card,buffer,0)==-1){
+        printf("Send fail");
+    }
     serverShutdown();
     return 0;
 }

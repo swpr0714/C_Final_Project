@@ -7,10 +7,12 @@
 #include "..\header\client_func.h"
 SOCKET g_sock;
 #define LOCALHOST "127.0.0.1"
-int main(){
+int main(int argc, char *argv[]){
     // Connect to server
     char *serveraddr = LOCALHOST;
-    // char *serveraddr = "192.168.0.21";
+    if(argc==2){
+        serveraddr = argv[1];
+    }
     g_sock = client_setup(serveraddr);  
     //Declare Variable
     int status = 0; 
@@ -22,7 +24,7 @@ int main(){
     gameStart(buffer);
     getCard(buffer,client_card);
     chooseType(buffer,client_card);
-    cls;
+    // cls;
     getCard(buffer,client_card);
 
     // Close socket

@@ -19,21 +19,19 @@ int gameStart(char *buffer){
 }
 
 int getCard(char *buffer, int *client_card){
-    // Deal
     printf("Your deck:\n");
-    // Recv card (Can be packged as a function)
     int status = recvCard(client_card,buffer);
     if(status!=0){
         printf("Deal ERROR.\n");
         return -1;
     }
-    // Print card
     printCard(client_card,26);
     return 0;
 }
 int recvCard(int *client_card, char *buffer){
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
+    printf("Recv card: %s\n", buffer);
     if(str2int(client_card,buffer)){return 1;}
     memset(buffer,0,sizeof(buffer));
     return 0;
@@ -133,7 +131,8 @@ int pair(int *card, char *buffer){
     scanf("%d %d", &num1, &num2);
     memset(buffer,0,sizeof(buffer));
     sprintf(temp, "%d %d", num1-1, num2-1);
-    if(card[num1]/4 != card[num2]/4){
+    printf("You choose %2d and %2d.\n", num1, num2);
+    if(card[num1-1]/4 != card[num2-1]/4){
         printf("Please choose again.\n");
         goto pair_restart;
     }
