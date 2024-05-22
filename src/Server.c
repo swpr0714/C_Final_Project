@@ -10,6 +10,7 @@ int main(){
     extern SOCKET g_server_fd;
     extern SOCKET *g_client_sockets; 
     int status = 0;
+    int mode = 0;
     // Connect
     server_setup();
     Sleep(300);
@@ -28,11 +29,23 @@ int main(){
     status = sendCard(card,buffer,1);
     if (status!=0){printf("Deal ERROR with code %d.\n", status);return -1;}
     //Player 1 playing
-    recvType(0, buffer);
-    recvCard(0,buffer,card,prev_card);
-    if(sendCard(card,buffer,0)==-1){
-        printf("Send fail");
+    for(int i=0;i<2; i++){
+        printf("user %d start\n", i);
+        if(mode==0){
+            mode = recvType(i, buffer);
+        }
+        else{
+            clbuf;
+            itoa(mode, buffer, 10);
+            send(g_client_sockets[i], buffer, strlen(buffer), 0);
+        }
+        recvCard(i,buffer,card,prev_card,mode);
+        if(sendCard(card,buffer,i)==-1){
+            printf("Send fail");
+        }
+        printf("user %d finish\n", i);
     }
+    
     serverShutdown();
     return 0;
 }

@@ -31,7 +31,7 @@ int getCard(char *buffer, int *client_card){
 int recvCard(int *client_card, char *buffer){
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
-    printf("Recv card: %s\n", buffer);
+    // printf("Recv card: %s\n", buffer);
     if(str2int(client_card,buffer)){return 1;}
     memset(buffer,0,sizeof(buffer));
     return 0;
@@ -40,30 +40,57 @@ int chooseType(char *buffer, int *card){
     memset(buffer, 0, sizeof(buffer));
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
+    choose_restart:
     int input;
-    printf("\nList of Hand Types:\n");
-    printf("\t1. Single\n");
-    printf("\t2. Pair\n");
-    printf("\t3. Straight\n");
-    printf("\t4. Full House\n");
-    printf("\t5. Four of a Kind\n");
-    printf("\t6. Flush\n");
-    printf("\t7. Skip\n");
-    choosetype:
-    printf("Please choose Hand Type: ");
-    scanf("%d", &input);
-    if(input<1||input>7){
-        printf("Please check your input.\n");
-        goto choosetype;
+    if(buffer[0]=='@'){
+        printf("\nList of Hand Types:\n");
+        printf("\t1. Single\n");
+        printf("\t2. Pair\n");
+        printf("\t3. Straight\n");
+        printf("\t4. Full House\n");
+        printf("\t5. Four of a Kind\n");
+        printf("\t6. Flush\n");
+        printf("\t7. Skip\n");
+        choosetype:
+        printf("Please choose Hand Type: ");
+        scanf("%d", &input);
+        if(input<1||input>7){
+            printf("Please check your input.\n");
+            goto choosetype;
+        }
+        memset(buffer, 0, sizeof(buffer));
+        itoa(input,buffer,10);
+        status = send(g_sock, buffer, BUFFER_SIZE,0);
+        if(status==SOCKET_ERROR){
+            printf("Failed to choose type.\n");
+            return 1;
+        }
     }
-    memset(buffer, 0, sizeof(buffer));
-    itoa(input,buffer,10);
-    status = send(g_sock, buffer, BUFFER_SIZE,0);
-    if(status==SOCKET_ERROR){
-        printf("Failed to choose type.\n");
-        return 1;
+    else{
+        input = atoi(&buffer[0]);
+        printf("Mode is: ");
+        switch(input){
+            case 1:
+                printf("Single\n");
+                break;
+            case 2:
+                printf("Pair\n");
+                break;
+            case 3:
+                printf("Straight\n");
+                break;
+            case 4:
+                printf("Full House\n");
+                break;
+            case 5:
+                printf("Four of a kind\n");
+                break;
+            case 6:
+                printf("Flush\n");
+                break;
+        }
+        printf("\n");
     }
-    // return 0;
     switch(input){
         case 1:
             single(card,buffer);
@@ -74,6 +101,7 @@ int chooseType(char *buffer, int *card){
         case 3:
             break;
         case 4:
+            fullhouse(card, buffer);
             break;
         case 5:
             break;
@@ -84,6 +112,10 @@ int chooseType(char *buffer, int *card){
         default:
             break;
     }
+    clbuf;
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
+    if(buffer[0]=='#'){ printf("Please choose again.\n");goto choose_restart; }
     return 0;
 }
 int clientShutdown(){
@@ -152,6 +184,47 @@ int pair(int *card, char *buffer){
     if(buffer[0]!='*'){
         printf("Please choose again.\n");
         goto pair_restart;
+    }
+    return 0;
+}
+int checkfullhouse(int *num){
+    if(num[0]/4!=num[1]/4){return 1;}
+    if(num[3]/4!=num[4]/4){return 1;}
+    if(num[2]/4==num[1]/4 || num[2]/4==num[1]/4){
+        return 0;
+    }
+    return 1;
+}
+int fullhouse(int *card, char *buffer){
+    int num[5];
+    char temp[5];
+    fullhouse_restart:
+    clbuf;
+    printf("Please choose two card: ");
+    scanf("%d %d %d %d %d", &num[0], &num[1], &num[2], &num[3], &num[4]);
+    memset(buffer,0,sizeof(buffer));
+    sprintf(temp, "%d %d %d %d %d",  num[0]-1, num[1]-1, num[2]-1, num[3]-1, num[4]-1);
+    Sort(num,5);
+    printf("You choose %2d %2d %2d %2d and %2d.\n", num[0], num[1], num[2], num[3], num[4]);
+    if(checkfullhouse(num)){
+        printf("Please choose again.\n");
+        goto fullhouse_restart;
+    }
+    strcat(buffer,temp);
+    int status = send(g_sock, buffer, BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Failed to send card.\n");
+        return 1;
+    }
+    clbuf;
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Server No Response.\n");
+        return 1;
+    }
+    if(buffer[0]!='*'){
+        printf("Please choose again.\n");
+        goto fullhouse_restart;
     }
     return 0;
 }

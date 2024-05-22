@@ -15,6 +15,7 @@ int sendCard(int **card, char *buffer, int client){
     return 0;
 }
 int recvType(int i, char *buffer){
+    int ret=0;
     Sleep(1000);
     memset(buffer, 0, sizeof(buffer));
     strcat(buffer,"@");
@@ -22,7 +23,8 @@ int recvType(int i, char *buffer){
     int status = recv(g_client_sockets[i],buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive type.\n"); return 1;}
     printf("Card mode is %s.\n",buffer);
-    return 0;
+    ret = atoi(buffer);
+    return ret;
 }
 int serverShutdown(){
     printf("Closing...\n");
@@ -34,29 +36,40 @@ int serverShutdown(){
     return 0;
 }
 
-int recvCard(int client, char *buffer, int **card, int *prev_card){
-    int cardset[5];
+int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
+    int *cardset = malloc(5*sizeof(int));
     clbuf;
     int status = recv(g_client_sockets[client],buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Recv ERROR.\n");
         return -1;
     }
-    printf("RECV: %s\n",buffer);
     status = str2int(cardset,buffer);
     // printf("Buffer: %s\n", buffer);
-    printf("Cardset: ");
-    for(int i=0;i<5;i++){
-        printf("%d ", cardset[i]);
-    }
-    printf("\n");
     clbuf;
     strcat(buffer, "*");
     send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
     Sort(cardset,5);
-    if (cardset[4] < prev_card[4]){
+    printf("User throw: ");
+    for(int i=0; i<5;i++){
+        if(cardset[i]!=-1){
+        printf("%d", card[client][cardset[i]]);
+        }
+        else{printf("-1");}
+        if(i!=4){printf(" ");}
+        else{printf("\n");}
+    }
+    // Verify
+    if (verify(cardset,mode,prev_card)){
         printf("Card set is smaller than previous.\n");
-        return 1;
+        clbuf;
+        strcat(buffer,"#");
+        send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
+    }
+    else{
+        clbuf;
+        strcat(buffer,"0");
+        send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
     }
     printf("Prev: ");
     for(int i=0;i<5;i++){
@@ -69,6 +82,18 @@ int recvCard(int client, char *buffer, int **card, int *prev_card){
         printf("%d ", prev_card[i]);
     }
     printf("\n");
-    printf("Success.\n");
+    free(cardset);
     return 0;
+}
+
+int verify(int *cardset, int mode, int *prev_card){
+    if(mode == 1 || mode == 2 || mode == 3 || mode == 6){
+        if (cardset[4] < prev_card[4]){
+            return 1;
+        }
+        return 0;
+    }
+    printf("out\n");
+    return 1;
+    
 }
