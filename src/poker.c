@@ -45,41 +45,43 @@ void printNum(int num){
 }
 void printCard(int *card, int size){
     for(int i=0;i<size; i++){
-        switch (card[i]%4)
-        {
-        case 0:
-            printf("%2d. Clever ", i+1);
-            printNum(card[i]);
-            break;
-        case 1:
-            printf("%2d. Club   ", i+1);
-            printNum(card[i]);
-            break;
-        case 2:
-            printf("%2d. Heart  ", i+1);
-            printNum(card[i]);
-            break;
-        case 3:
-            printf("%2d. Blade  ", i+1);
-            printNum(card[i]);
-            break;
-        case -1:
-            printf("              |\t");
-            break;
-        default:
-            break;
+        if(card[i]!=-1){
+            switch (card[i]%4)
+            {
+            case 0:
+                printf("%2d. Clever ", i+1);
+                printNum(card[i]);
+                break;
+            case 1:
+                printf("%2d. Club   ", i+1);
+                printNum(card[i]);
+                break;
+            case 2:
+                printf("%2d. Heart  ", i+1);
+                printNum(card[i]);
+                break;
+            case 3:
+                printf("%2d. Blade  ", i+1);
+                printNum(card[i]);
+                break;
+            case -2:
+                printf("              |\t");
+                break;
+            default:
+                break;
+            }
+            if ((i+1)%5==0){printf("\n");}
         }
-        if ((i+1)%5==0){printf("\n");}
     }
     printf("\n");
 }
-int int2str(int *card, char *buf){
+int int2str(int *card, char *buf, int size){
     memset(buf,0,sizeof(buf));
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < size; i++) {
         char temp[3];
         sprintf(temp, "%d", card[i]);
         strcat(buf, temp);
-        if (i < 25) {
+        if (i < size-1) {
             strcat(buf, " ");
         }
     }
@@ -92,7 +94,7 @@ int str2int(int *card, char *buf){
     char *token = strtok(buf, " ");
     while (token != NULL) {
         temp = atoi(token);
-        if(temp<-1){return 1;}
+        // if(temp<-1){return 1;}
         card[i++] = temp;
         token = strtok(NULL, " ");
     }

@@ -26,7 +26,8 @@ int main(int argc, char *argv[]){
     chooseType(buffer,client_card);
     // cls;
     getCard(buffer,client_card);
-
+    chooseType(buffer,client_card);
+    getCard(buffer,client_card);
     // Close socket
     clientShutdown();
     return 0;

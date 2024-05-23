@@ -19,21 +19,23 @@ int gameStart(char *buffer){
 }
 
 int getCard(char *buffer, int *client_card){
-    printf("Your deck:\n");
     int status = recvCard(client_card,buffer);
     if(status!=0){
         printf("Deal ERROR.\n");
         return -1;
     }
+    printf("Your deck:\n");
     printCard(client_card,26);
     return 0;
 }
 int recvCard(int *client_card, char *buffer){
+    clbuf;
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
     // printf("Recv card: %s\n", buffer);
-    if(str2int(client_card,buffer)){return 1;}
-    memset(buffer,0,sizeof(buffer));
+    str2int(client_card,buffer);
+    // if(str2int(client_card,buffer)){return 1;}
+    clbuf;
     return 0;
 }
 int chooseType(char *buffer, int *card){
@@ -127,7 +129,15 @@ int clientShutdown(){
 }
 int single(int *card, char *buffer){
     int num;
+    int prev[5];
     char temp[5];
+    clbuf;
+    recv(g_sock,buffer,BUFFER_SIZE,0);
+    str2int(prev,buffer);
+    if(prev[4]!=-1){
+        printf("Another player throw: ");
+        printCard(prev,5);
+    }
     single_restart:
     printf("Please choose one card: ");
     scanf("%d", &num);
@@ -135,37 +145,49 @@ int single(int *card, char *buffer){
     sprintf(temp, "%d", num-1);
     strcat(buffer,"-1 -1 -1 -1 ");
     strcat(buffer,temp);
+    if(card[num]<prev[4]){
+        printf("Cards are smaller than previous, please choose again.\n");
+        goto single_restart;
+    }
     int status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to send card.\n");
         return 1;
     }
-    memset(buffer,0,sizeof(buffer));
+    clbuf;
     status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Server No Response.\n");
         return 1;
     }
-    if(buffer[0]!='*'){
-        printf("Please choose again.\n");
-        goto single_restart;
-    }
-    // printf("Recv\n");
     return 0;
 }
 
 int pair(int *card, char *buffer){
     int num1, num2;
+    int prev[5];
     char temp[5];
+    clbuf;
+    recv(g_sock,buffer,BUFFER_SIZE,0);
+    str2int(prev,buffer);
+    if(prev[4]!=-1){
+        printf("Another player throw: ");
+        printCard(prev,5);
+    }
     pair_restart:
     clbuf;
     printf("Please choose two card: ");
     scanf("%d %d", &num1, &num2);
     memset(buffer,0,sizeof(buffer));
     sprintf(temp, "%d %d", num1-1, num2-1);
-    printf("You choose %2d and %2d.\n", num1, num2);
-    if(card[num1-1]/4 != card[num2-1]/4){
-        printf("Please choose again.\n");
+    printf("You've chose %2d and %2d.\n", num1, num2);
+    int check = card[num2-1]/4 - card[num1-1]/4;
+    if(check||num2==num1){
+        printf("Please choose again.\n", check);
+        goto pair_restart;
+    }
+    if(card[num2-1]<prev[4] && card[num1-1]<prev[4]){
+        printf("Cards are smaller than previous, please choose again.\n");
         goto pair_restart;
     }
     strcat(buffer,"-1 -1 -1 ");
@@ -180,10 +202,6 @@ int pair(int *card, char *buffer){
     if(status==SOCKET_ERROR){
         printf("Server No Response.\n");
         return 1;
-    }
-    if(buffer[0]!='*'){
-        printf("Please choose again.\n");
-        goto pair_restart;
     }
     return 0;
 }

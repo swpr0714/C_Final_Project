@@ -28,7 +28,24 @@ int main(){
     status = sendCard(card,buffer,0);
     status = sendCard(card,buffer,1);
     if (status!=0){printf("Deal ERROR with code %d.\n", status);return -1;}
-    //Player 1 playing
+    for(int i=0;i<2; i++){
+        printf("user %d start\n", i);
+        if(mode==0){
+            mode = recvType(i, buffer);
+        }
+        else{
+            clbuf;
+            itoa(mode, buffer, 10);
+            send(g_client_sockets[i], buffer, strlen(buffer), 0);
+        }
+        Sleep(1000);
+        recvCard(i,buffer,card,prev_card,mode);
+
+        if(sendCard(card,buffer,i)==-1){
+            printf("Send fail");
+        }
+        printf("user %d finish\n", i);
+    }
     for(int i=0;i<2; i++){
         printf("user %d start\n", i);
         if(mode==0){
