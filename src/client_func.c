@@ -103,7 +103,7 @@ int chooseType(char *buffer, int *card){
         case 3:
             break;
         case 4:
-            fullhouse(card, buffer);
+            fullHouse(card, buffer);
             break;
         case 5:
             break;
@@ -117,7 +117,6 @@ int chooseType(char *buffer, int *card){
     clbuf;
     status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
-    if(buffer[0]=='#'){ printf("Please choose again.\n");goto choose_restart; }
     return 0;
 }
 int clientShutdown(){
@@ -135,20 +134,30 @@ int single(int *card, char *buffer){
     recv(g_sock,buffer,BUFFER_SIZE,0);
     str2int(prev,buffer);
     if(prev[4]!=-1){
-        printf("Another player throw: ");
+        printf("Another player throw:\n");
         printCard(prev,5);
     }
+    printf("If you want to pass you can input -3\n");
     single_restart:
     printf("Please choose one card: ");
     scanf("%d", &num);
-    memset(buffer,0,sizeof(buffer));
+    clbuf;
+    if(num==-3){
+        strcat(buffer,"-1 -1 -1 -1 -1");
+        goto pass;
+    }
     sprintf(temp, "%d", num-1);
     strcat(buffer,"-1 -1 -1 -1 ");
     strcat(buffer,temp);
-    if(card[num]<prev[4]){
+    if(card[num-1]==-2){
+        printf("Please choose again.\n");
+        goto single_restart;
+    }
+    if(card[num-1]<prev[4]){
         printf("Cards are smaller than previous, please choose again.\n");
         goto single_restart;
     }
+    pass:
     int status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to send card.\n");
@@ -171,33 +180,39 @@ int pair(int *card, char *buffer){
     recv(g_sock,buffer,BUFFER_SIZE,0);
     str2int(prev,buffer);
     if(prev[4]!=-1){
-        printf("Another player throw: ");
+        printf("Another player throw:\n");
         printCard(prev,5);
     }
+    printf("If you want to pass you can input -3 -3\n");
     pair_restart:
     clbuf;
     printf("Please choose two card: ");
     scanf("%d %d", &num1, &num2);
     memset(buffer,0,sizeof(buffer));
     sprintf(temp, "%d %d", num1-1, num2-1);
-    printf("You've chose %2d and %2d.\n", num1, num2);
+    // printf("You've chose %2d and %2d.\n", num1, num2);
+    if(num1==-3&&num2==-3){
+        strcat(buffer,"-1 -1 -1 -1 -1");
+        goto pass;
+    }
+    strcat(buffer,"-1 -1 -1 ");
+    strcat(buffer,temp);
     int check = card[num2-1]/4 - card[num1-1]/4;
-    if(check||num2==num1){
-        printf("Please choose again.\n", check);
+    if(check||num2==num1||card[num2-1]==-2||card[num1-1]==-2){
+        printf("Please choose again.\n");
         goto pair_restart;
     }
     if(card[num2-1]<prev[4] && card[num1-1]<prev[4]){
         printf("Cards are smaller than previous, please choose again.\n");
         goto pair_restart;
     }
-    strcat(buffer,"-1 -1 -1 ");
-    strcat(buffer,temp);
+    pass:
     int status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to send card.\n");
         return 1;
     }
-    memset(buffer,0,sizeof(buffer));
+    clbuf;
     status = recv(g_sock,buffer,BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Server No Response.\n");
@@ -205,30 +220,54 @@ int pair(int *card, char *buffer){
     }
     return 0;
 }
-int checkfullhouse(int *num){
-    if(num[0]/4!=num[1]/4){return 1;}
-    if(num[3]/4!=num[4]/4){return 1;}
-    if(num[2]/4==num[1]/4 || num[2]/4==num[1]/4){
+int checkFullHouse(int *card, int *num, int *prev){
+    for(int i=0;i<5;i++){
+        for(int j=i+1;j<5;j++){
+            if(num[i]==num[j]){
+                return 1;
+            }
+        }
+    }
+    if(card[num[0]-1]/4!=card[num[1]-1]/4){return 1;}
+    if(card[num[3]-1]/4!=card[num[4]-1]/4){return 1;}
+    if((card[num[2]-1]/4==card[num[1]-1]/4 || card[num[2]-1]/4==card[num[3]-1]/4)&&card[num[2]-1]>prev[2]){
         return 0;
     }
     return 1;
 }
-int fullhouse(int *card, char *buffer){
+int fullHouse(int *card, char *buffer){
     int num[5];
     char temp[5];
-    fullhouse_restart:
+    int prev[5];
     clbuf;
-    printf("Please choose two card: ");
-    scanf("%d %d %d %d %d", &num[0], &num[1], &num[2], &num[3], &num[4]);
-    memset(buffer,0,sizeof(buffer));
-    sprintf(temp, "%d %d %d %d %d",  num[0]-1, num[1]-1, num[2]-1, num[3]-1, num[4]-1);
-    Sort(num,5);
-    printf("You choose %2d %2d %2d %2d and %2d.\n", num[0], num[1], num[2], num[3], num[4]);
-    if(checkfullhouse(num)){
-        printf("Please choose again.\n");
-        goto fullhouse_restart;
+    recv(g_sock,buffer,BUFFER_SIZE,0);
+    str2int(prev,buffer);
+    if(prev[4]!=-1){
+        printf("Another player throw:\n");
+        printCard(prev,5);
     }
-    strcat(buffer,temp);
+    printf("If you want to pass you can input -3 -3 -3 -3 -3\n");
+    fullHouse_restart:
+    printf("Please choose five card in \"A A A B B\" order: ");
+    scanf("%d %d %d %d %d", &num[0], &num[1], &num[2], &num[3], &num[4]);
+    Sort(num,5);
+    clbuf;
+    if(num[0]==-3){
+        strcat(buffer,"-1 -1 -1 -1 -1");
+        goto pass;
+    }
+    for(int i=0; i<5; i++){
+        itoa(num[i]-1,temp,10);
+        strcat(buffer,temp);
+        if(i!=4){
+            strcat(buffer," ");
+        }
+    }
+    if(checkFullHouse(card,num,prev)){
+        printf("Please choose again.\n");
+        goto fullHouse_restart;
+    }
+    pass:
     int status = send(g_sock, buffer, BUFFER_SIZE,0);
     if(status==SOCKET_ERROR){
         printf("Failed to send card.\n");
@@ -240,9 +279,29 @@ int fullhouse(int *card, char *buffer){
         printf("Server No Response.\n");
         return 1;
     }
-    if(buffer[0]!='*'){
-        printf("Please choose again.\n");
-        goto fullhouse_restart;
-    }
+    clbuf;
     return 0;
+}
+
+int gameOver(char *buffer){
+    clbuf;
+    recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(buffer[0]=='A'){
+        printf("Player 1 Win.\n");
+        printf("Game is over.\n");
+        return 1;
+    }
+    else if(buffer[0]=='B'){
+        printf("Player 2 Win.\n");
+        printf("Game is over.\n");
+        return 2;
+    }
+    else if(buffer[0]=='#'){
+        // printf("Continue.\n");
+        return 0;
+    }
+    else{
+        printf("%s\n", buffer);
+        return -1;
+    }
 }

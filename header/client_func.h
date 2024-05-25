@@ -5,5 +5,5 @@ int chooseType(char *buffer, int *card);
 int clientShutdown();
 int single(int *card, char *buffer);
 int pair(int *card, char *buffer);
-int checkfullhouse(int *num);
-int fullhouse(int *card, char *buffer);
+int checkFullHouse(int *num);
+int fullHouse(int *card, char *buffer);

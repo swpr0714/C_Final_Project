@@ -16,7 +16,7 @@ int sendCard(int **card, char *buffer, int client){
 }
 int recvType(int i, char *buffer){
     int ret=0;
-    Sleep(1000);
+    // Sleep(1000);
     memset(buffer, 0, sizeof(buffer));
     strcat(buffer,"@");
     send(g_client_sockets[i], buffer, BUFFER_SIZE, 0);
@@ -50,7 +50,6 @@ int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
         return -1;
     }
     status = str2int(cardset,buffer);
-    // printf("Buffer: %s\n", buffer);
     clbuf;
     strcat(buffer, "*");
     send(g_client_sockets[client], buffer, BUFFER_SIZE,0);
@@ -71,6 +70,9 @@ int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
         if(cardset[i]==-1){
             prev_card[i]=-1;
         }
+        else if(cardset[i]==-3){
+            prev_card[i]=-1;
+        }
         else{
             prev_card[i] = card[client][cardset[i]];
         }
@@ -85,6 +87,38 @@ int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
     }
     strcat(buffer,"*");
     send(g_client_sockets[client], buffer, BUFFER_SIZE, 0);
+    printf("send *\n");
     free(cardset);
     return 0;
+}
+int checkPass(const int mode, int *prev){
+    int temp = mode;
+    for(int i=0; i<5; i++){
+        if(prev[i]!=-1){
+            return mode;
+        }
+    }
+    return 0;
+}
+
+int checkWin(int **card){
+    int status = 1;
+    for(int i=0; i<26; i++){
+        if(card[0][i] == -2){
+            continue;
+        }
+        else{
+            status = 0;
+            break;
+        }
+    }
+    if(status){
+        return 1; 
+    }
+    for(int i=0; i<26; i++){
+        if(card[1][i] != -2){
+            return 0;
+        }
+    }
+    return 2;
 }

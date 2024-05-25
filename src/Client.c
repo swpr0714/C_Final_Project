@@ -22,13 +22,15 @@ int main(int argc, char *argv[]){
     printf("Wait for other players...\n");
     // Game start
     gameStart(buffer);
-    getCard(buffer,client_card);
-    chooseType(buffer,client_card);
-    // cls;
-    getCard(buffer,client_card);
-    chooseType(buffer,client_card);
-    getCard(buffer,client_card);
-    // Close socket
+    while(1){
+        getCard(buffer,client_card);
+        chooseType(buffer,client_card);
+        status = gameOver(buffer);
+        if(status){
+            printf("Break\n");
+            break;
+        }
+    }
     clientShutdown();
     return 0;
 }
