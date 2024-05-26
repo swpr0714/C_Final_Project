@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-#define PORT 8080
+#define PORT 6312
 #define BUFFER_SIZE 1024
 #define MAX_CLIENTS 2
 #define clbuf memset(buffer, 0, BUFFER_SIZE)

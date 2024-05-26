@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-#define PORT 8080
+#define PORT 6312
 #define BUFFER_SIZE 1024
 #define MAX_CLIENTS 2
 #pragma comment (lib, "Ws2_32.lib")
@@ -77,7 +77,7 @@ int *server_setup() {
         exit(-1);
     }
 
-    printf("Server listening on port %d\n", PORT);
+    printf("Server listening on PORT %hu\n", PORT);
 
     // Accept
     for (int i = 0; i < max_clients; ++i) {

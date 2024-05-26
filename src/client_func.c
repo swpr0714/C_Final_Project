@@ -20,7 +20,10 @@ int gameStart(char *buffer){
 
 int getCard(char *buffer, int *client_card){
     int status = recvCard(client_card,buffer);
-    if(status!=0){
+    if (status==1){
+        return 1;
+    }
+    else if(status==-1){
         printf("Deal ERROR.\n");
         return -1;
     }
@@ -31,8 +34,10 @@ int getCard(char *buffer, int *client_card){
 int recvCard(int *client_card, char *buffer){
     clbuf;
     int status = recv(g_sock,buffer,BUFFER_SIZE,0);
-    if(status==SOCKET_ERROR){printf("Failed to receive card."); return 1;}
-    // printf("Recv card: %s\n", buffer);
+    if(status==SOCKET_ERROR){printf("Failed to receive card."); return -1;}
+    if(buffer[0]=='A' || buffer[0]=='B'){
+        return 1;
+    }
     str2int(client_card,buffer);
     // if(str2int(client_card,buffer)){return 1;}
     clbuf;
@@ -55,6 +60,7 @@ int chooseType(char *buffer, int *card){
         choosetype:
         printf("Please choose Hand Type: ");
         scanf("%d", &input);
+        fflush(stdin);
         if(input<1||input>6){
             printf("Please check your input.\n");
             goto choosetype;
@@ -109,6 +115,7 @@ int chooseType(char *buffer, int *card){
             fourOfAKind(card, buffer);
             break;
         case 6:
+            flush(card,buffer);
             break;
         default:
             break;
@@ -509,23 +516,9 @@ int gameOver(char *buffer){
     clbuf;
     recv(g_sock,buffer,BUFFER_SIZE,0);
     if(buffer[0]=='A'){
-        printf("Player 1 Win.\n");
-        printf("Game is over.\n");
-        printf("System will shutdown in 5 seconds.\n");
-        for(int i = 5; i >0 ; i--){
-            printf("%d...\n",i);
-            Sleep(1000);
-        }
         return 1;
     }
     else if(buffer[0]=='*B'){
-        printf("Player 2 Win.\n");
-        printf("Game is over.\n\n\n\n");
-        printf("System will shutdown in 5 seconds.\n");
-        for(int i = 5; i >0 ; i--){
-            printf("%d...\n",i);
-            Sleep(1000);
-        }
         return 2;
     }
     else if(buffer[0]=='#'){

@@ -139,18 +139,3 @@ int findOrder(int **card, SOCKET *sock){
     }
     return user;
 }
-
-// int main(){
-//     char buf[128] = {'\0'};
-//     int **card;
-//     card = shuffle();
-//     int client_card[26];
-//     int2str(card[0],buf);
-//     printf("Server: %s",buf);
-//     str2int(client_card,buf);
-//     printf("\nClient: ");
-//     for(int j=0; j<26;j++){
-//         printf("%d",client_card[j]);
-//         if(j!=25){printf(" ");}
-//     }
-// }

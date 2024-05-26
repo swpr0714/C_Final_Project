@@ -22,9 +22,16 @@ int main(int argc, char *argv[]){
     printf("Wait for other players...\n");
     // Game start
     gameStart(buffer);
-    Sleep(2000);
+    Sleep(500);
+    int first = 1;
     while(1){
-        getCard(buffer,client_card);
+        if(getCard(buffer,client_card)){
+            goto end;
+        }
+        if(first){
+            Sleep(500);
+            first = 0;
+        }
         chooseType(buffer,client_card);
         status = gameOver(buffer);
         if(status){
@@ -32,9 +39,12 @@ int main(int argc, char *argv[]){
         }
         cls;
     }
-    printf("You have lost.\nGame over.\n");
     end:
-    clientShutdown();
-    cls;
+    printf("Game is over.\n");
+    printf("System will shutdown in 5 seconds.\n");
+    for(int i = 5; i >0 ; i--){
+        printf("%d...\n",i);
+        Sleep(1000);
+    }
     return 0;
 }

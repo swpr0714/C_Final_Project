@@ -5,31 +5,7 @@
 #include "..\header\poker.h"
 #include "..\header\server_func.h"
 
-int end(int status, char *buffer){
-    clbuf;
-    switch(status){
-        case 0:
-            strcat(buffer,"#");
-            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-            break;
-        case 1:
-            strcat(buffer,"A");
-            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-            break;
-        case 2:
-            strcat(buffer,"B");
-            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-            break;
-        case -1:
-            return -1;
-    }
-    serverShutdown();
-    return 0;
-}
-int main(){
+int main(int argc, char **argv){
     srand(time(NULL));
     int prev_card[5]={-1,-1,-1,-1,-1};
     extern SOCKET g_server_fd;
@@ -53,12 +29,17 @@ int main(){
     status = sendCard(card,buffer,0);
     status = sendCard(card,buffer,1);
     if (status!=0){printf("Deal ERROR with code %d.\n", status);return -1;}
-
     while(1){
         for(int i=0;i<2; i++){
             printf("user %d start\n", i);
             if(mode==0){
                 mode = recvType(i, buffer);
+                if (mode==-1){
+                    goto end;
+                }
+            }
+            else if (mode==-1){
+                goto end;
             }
             else{
                 clbuf;
@@ -66,7 +47,10 @@ int main(){
                 printf("Mode = %s\n", buffer);
                 send(g_client_sockets[i], buffer, strlen(buffer), 0);
             }
-            recvCard(i,buffer,card,prev_card,mode);
+            status = recvCard(i,buffer,card,prev_card,mode);
+            if(status==-1){
+                goto end;
+            }
             status = checkWin(card);
             // printf("Check win %d", status);
             if(status){
@@ -84,12 +68,19 @@ int main(){
             
             if(status==-1){
                 printf("Send fail");
+                goto end;
             }
             mode = checkPass(mode,prev_card);
             printf("user %d finish\n", i);
         }
     }
     end:
+    printf("Server will shutdown in 5 seconds.\n");
+    for(int i = 5; i >0 ; i--){
+        printf("%d...\n",i);
+        Sleep(1000);
+    }
+    serverShutdown();
     return 0;
 }
 

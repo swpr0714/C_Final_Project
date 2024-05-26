@@ -15,25 +15,16 @@ int sendCard(int **card, char *buffer, int client){
     return 0;
 }
 int recvType(int i, char *buffer){
-    int ret=0;
+    int ret=-1;
     // Sleep(1000);
     memset(buffer, 0, sizeof(buffer));
     strcat(buffer,"@");
     send(g_client_sockets[i], buffer, BUFFER_SIZE, 0);
     int status = recv(g_client_sockets[i],buffer,BUFFER_SIZE,0);
-    if(status==SOCKET_ERROR){printf("Failed to receive type.\n"); return 1;}
+    if(status==SOCKET_ERROR){printf("Failed to receive type.\n"); return -1;}
     printf("Card mode is %s.\n",buffer);
     ret = atoi(buffer);
     return ret;
-}
-int serverShutdown(){
-    printf("Closing...\n");
-    closesocket(g_client_sockets[0]);
-    closesocket(g_client_sockets[1]);
-    closesocket(g_server_fd);
-    WSACleanup();
-    printf("System has shutdown.\n");
-    return 0;
 }
 
 int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
@@ -121,3 +112,39 @@ int checkWin(int **card){
     }
     return 2;
 }
+
+int serverShutdown(){
+    printf("Closing...\n");
+    closesocket(g_client_sockets[0]);
+    closesocket(g_client_sockets[1]);
+    closesocket(g_server_fd);
+    WSACleanup();
+    printf("System has shutdown.\n");
+    return 0;
+}
+
+int end(int status, char *buffer){
+    clbuf;
+    switch(status){
+        case 0:
+            strcat(buffer,"#");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case 1:
+            strcat(buffer,"A");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case 2:
+            strcat(buffer,"B");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case -1:
+            return -1;
+    }
+    serverShutdown();
+    return 0;
+}
+
