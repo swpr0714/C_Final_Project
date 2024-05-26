@@ -87,7 +87,6 @@ int recvCard(int client, char *buffer, int **card, int *prev_card, int mode){
     }
     strcat(buffer,"*");
     send(g_client_sockets[client], buffer, BUFFER_SIZE, 0);
-    printf("send *\n");
     free(cardset);
     return 0;
 }

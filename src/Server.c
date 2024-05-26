@@ -6,28 +6,28 @@
 #include "..\header\server_func.h"
 
 int end(int status, char *buffer){
+    clbuf;
     switch(status){
-            case 0:
-                strcat(buffer,"#");
-                send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-                send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-                break;
-            case 1:
-                strcat(buffer,"A");
-                send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-                send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-                break;
-            case 2:
-                strcat(buffer,"B");
-                send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
-                send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
-                break;
-            case -1:
-                printf("Return -1\n");
-                return -1;
-        }
-        serverShutdown();
-        return 0;
+        case 0:
+            strcat(buffer,"#");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case 1:
+            strcat(buffer,"A");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case 2:
+            strcat(buffer,"B");
+            send(g_client_sockets[0], buffer, BUFFER_SIZE, 0);
+            send(g_client_sockets[1], buffer, BUFFER_SIZE, 0);
+            break;
+        case -1:
+            return -1;
+    }
+    serverShutdown();
+    return 0;
 }
 int main(){
     srand(time(NULL));
@@ -72,6 +72,7 @@ int main(){
             if(status){
                 // printf("status = %d\n", status);
                 end(status, buffer);
+                goto end;
             }
             clbuf;
             int a;
@@ -88,6 +89,7 @@ int main(){
             printf("user %d finish\n", i);
         }
     }
+    end:
     return 0;
 }
 
