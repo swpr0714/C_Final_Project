@@ -52,11 +52,10 @@ int chooseType(char *buffer, int *card){
         printf("\t4. Full House\n");
         printf("\t5. Four of a Kind\n");
         printf("\t6. Flush\n");
-        printf("\t7. Skip\n");
         choosetype:
         printf("Please choose Hand Type: ");
         scanf("%d", &input);
-        if(input<1||input>7){
+        if(input<1||input>6){
             printf("Please check your input.\n");
             goto choosetype;
         }
@@ -106,10 +105,9 @@ int chooseType(char *buffer, int *card){
             fullHouse(card, buffer);
             break;
         case 5:
+            fourOfAKind(card, buffer);
             break;
         case 6:
-            break;
-        case 7:
             break;
         default:
             break;
@@ -282,6 +280,107 @@ int fullHouse(int *card, char *buffer){
     clbuf;
     return 0;
 }
+
+int checkfourOfAKind(int *card, int *num, int *prev){
+    int prevkind = 0;
+    // A B B B B = 0
+    // A A A A B = 1
+    for(int i=0;i<5;i++){
+        for(int j=i+1;j<5;j++){
+            if(num[i]==num[j]){
+                printf("A\n");
+                return 1;
+            }
+        }
+    }
+    if(prev[0]/4==prev[1]/4){
+        prevkind = 1;
+    }
+    // A B B B B
+    if(card[num[0]-1]/4!=card[num[1]-1]/4){
+        for(int i=1;i<4;i++){
+            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){
+                printf("B\n");
+                return 1;
+            }
+        }
+        if(prevkind==0 && card[num[4]-1]<prev[4]){
+            printf("C\n");
+            return 1;
+        }
+        else if (prevkind==1 && card[num[4]-1]<prev[3]){
+            printf("D\n");
+            return 1;
+        }
+        return 0;
+    }
+    // A A A A B
+    else{
+        for(int i=0;i<3;i++){
+            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){
+                return 1;
+            }
+        }
+        if(prevkind==0 && card[num[3]-1]<prev[4]){
+            printf("F\n");
+            return 1;
+        }
+        else if (prevkind==1 && card[num[3]-1]<prev[3]){
+            printf("G\n");
+            return 1;
+        }
+        return 0;        
+    }
+    return 1;
+}
+int fourOfAKind(int *card, char *buffer){
+    int num[5];
+    char temp[5];
+    int prev[5];
+    clbuf;
+    recv(g_sock,buffer,BUFFER_SIZE,0);
+    str2int(prev,buffer);
+    if(prev[4]!=-1){
+        printf("Another player throw:\n");
+        printCard(prev,5);
+    }
+    printf("If you want to pass you can input -3 -3 -3 -3 -3\n");
+    fourofakind_restart:
+    printf("Please choose five card in \"A A A A B\" order: ");
+    scanf("%d %d %d %d %d", &num[0], &num[1], &num[2], &num[3], &num[4]);
+    Sort(num,5);
+    clbuf;
+    if(num[0]==-3){
+        strcat(buffer,"-1 -1 -1 -1 -1");
+        goto pass;
+    }
+    for(int i=0; i<5; i++){
+        itoa(num[i]-1,temp,10);
+        strcat(buffer,temp);
+        if(i!=4){
+            strcat(buffer," ");
+        }
+    }
+    if(checkfourOfAKind(card,num,prev)){
+        printf("Please choose again.\n");
+        goto fourofakind_restart;
+    }
+    pass:
+    int status = send(g_sock, buffer, BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Failed to send card.\n");
+        return 1;
+    }
+    clbuf;
+    status = recv(g_sock,buffer,BUFFER_SIZE,0);
+    if(status==SOCKET_ERROR){
+        printf("Server No Response.\n");
+        return 1;
+    }
+    clbuf;
+    return 0;
+}
+
 
 int gameOver(char *buffer){
     clbuf;
