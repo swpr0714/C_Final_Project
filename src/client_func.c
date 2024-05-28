@@ -5,7 +5,6 @@
 #include "..\header\com_setup.h"
 #include "..\header\poker.h"
 #pragma warning(disable:4700)
-#define BUFFER_SIZE 1024
 SOCKET g_sock;
 int gameStart(char *buffer){
     int status = 0;
