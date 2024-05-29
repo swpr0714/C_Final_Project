@@ -364,36 +364,19 @@ int checkfourOfAKind(int *card, int *num, int *prev){
     // A B B B B
     if(card[num[0]-1]/4!=card[num[1]-1]/4){
         for(int i=1;i<4;i++){
-            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){
-                printf("B\n");
-                return 1;
-            }
+            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){return 1;}
         }
-        if(prevkind==0 && card[num[4]-1]<prev[4]){
-            printf("C\n");
-            return 1;
-        }
-        else if (prevkind==1 && card[num[4]-1]<prev[3]){
-            printf("D\n");
-            return 1;
-        }
+        if(prevkind==0 && card[num[4]-1]<prev[4]){return 1;}
+        else if (prevkind==1 && card[num[4]-1]<prev[3]){return 1;}
         return 0;
     }
     // A A A A B
     else{
         for(int i=0;i<3;i++){
-            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){
-                return 1;
-            }
+            if(card[num[i]-1]/4!=card[num[i+1]-1]/4){return 1;}
         }
-        if(prevkind==0 && card[num[3]-1]<prev[4]){
-            printf("F\n");
-            return 1;
-        }
-        else if (prevkind==1 && card[num[3]-1]<prev[3]){
-            printf("G\n");
-            return 1;
-        }
+        if(prevkind==0 && card[num[3]-1]<prev[4]){return 1;}
+        else if (prevkind==1 && card[num[3]-1]<prev[3]){return 1;}
         return 0;        
     }
     return 1;
@@ -448,9 +431,7 @@ int fourOfAKind(int *card, char *buffer){
 int checkFlush(int *card, int *num, int *prev){
     for(int i=0;i<5;i++){
         for(int j=i+1;j<5;j++){
-            if(num[i]==num[j]){
-                return 1;
-            }
+            if(num[i]==num[j]){return 1;}
         }
     }
     for(int i=0; i<4; i++){
@@ -458,9 +439,7 @@ int checkFlush(int *card, int *num, int *prev){
             return 1;
         }
     }
-    if(card[num[4]-1]<prev[4]){
-        return 1;
-    }
+    if(card[num[4]-1]<prev[4]){return 1;}
     return 0;
 }
 int flush(int *card, char *buffer){
