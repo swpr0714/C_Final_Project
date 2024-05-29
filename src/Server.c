@@ -8,6 +8,7 @@
 int main(int argc, char **argv){
     srand(time(NULL));
     int prev_card[5]={-1,-1,-1,-1,-1};
+    int **card;
     extern SOCKET g_server_fd;
     extern SOCKET *g_client_sockets; 
     int status = 0;
@@ -16,7 +17,20 @@ int main(int argc, char **argv){
     server_setup();
     Sleep(300);
     // Declare variables
-    int **card = shuffle();
+    if(argc==2&&strcmp(argv[1],"TEST")==0){
+        card = (int**)malloc(2*sizeof(int*));
+        card[0] = (int*)malloc(26*sizeof(int));
+        card[1] = (int*)malloc(26*sizeof(int));
+        int defaultcard[2][26] = {
+            {0,1,2,3,4,6,7,8,10,12,16,18,24,25,28,29,32,33,36,37,38,41,44,45,46,47},
+            {5,9,11,13,14,15,17,19,20,21,22,23,26,27,30,31,34,35,39,40,42,43,48,49,50,51}};
+        for(int i=0; i<52;i++){
+            card[i/26][i%26]=defaultcard[i/26][i%26];
+        }
+    }
+    else{
+        card = shuffle();
+    }
     findOrder(card,g_client_sockets);
     // Game start
     char buffer[BUFFER_SIZE] = "Game Start :D";
