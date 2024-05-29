@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #define PORT 6312
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 256
 #define MAX_CLIENTS 2
 #define clbuf memset(buffer, 0, BUFFER_SIZE)
 #pragma comment (lib, "Ws2_32.lib")

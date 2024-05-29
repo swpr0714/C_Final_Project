@@ -4,7 +4,6 @@
 #include "..\header\com_setup.h"
 #include "..\header\poker.h"
 SOCKET *g_client_sockets;
-#define BUFFER_SIZE 1024
 int sendCard(int **card, char *buffer, int client){
     int status = 0;
     clbuf;
