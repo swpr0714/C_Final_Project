@@ -1,6 +1,4 @@
 #pragma once
-#define cls system("cls")
-
 void swap(int *cardA, int *cardB);
 void Sort(int *arr, int size);
 void printNum(int num);
