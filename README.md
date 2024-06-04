@@ -11,6 +11,7 @@
 [![Commit][commit-shield]][commit-url]
 ![Build][build-shield]
 ![Test][test-shield]
+![Release][Release-shield]
 <!-- [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url] -->
 
@@ -163,3 +164,5 @@ Mail: swpr0714@gmail.com
 [win11-shield]:https://img.shields.io/badge/Windows_11-0078d4?style=flat-square&logo=windows-11&logoColor=white
 [makefile-url]:https://github.com/swpr0714/C_Final_Project/blob/main/build/makefile
 [Release]: https://github.com/swpr0714/C_Final_Project/releases/tag/Release
+[Release-shield]: https://img.shields.io/badge/release-v1.0.0-blue?style=flat-square
+
