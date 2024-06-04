@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include <winsock2.h>
 #include "..\header\client_func.h"
 #include "..\header\com_setup.h"
