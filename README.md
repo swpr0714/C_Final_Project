@@ -20,10 +20,9 @@
       - [題目：線上撲克牌遊戲](#題目線上撲克牌遊戲-1)
   - [目錄](#目錄)  
   - [組員名單](#組員名單)
-  - [程式介紹](#程式介紹)
+  - [程式介紹與安裝](#程式介紹與安裝)
   - [遊戲規則](#遊戲規則)
     - [系統配置要求](#系統配置要求)
-    - [安裝步驟](#安裝步驟)
     - [文件目錄說明](#文件目錄說明)
     - [建置](#建置)
     - [版本控制](#版本控制)
@@ -35,8 +34,8 @@
 #### 1. B10803144 嚴和楷
 #### 2. B11131005 黃宇
 #### 3. B11131016 鄧盛文
-## 程式介紹
-#### 這是一個基於TCP架構，由兩個玩家進行的大老二遊戲，這個遊戲是由兩個`Client`與一個`Server`所構成。首先，由一台電腦執行`Server.exe`，隨後由另外兩台電腦執行`Client.exe`並同時傳入Server的IPV4位址，方法如下：
+## 程式介紹與安裝
+#### 這是一個基於TCP架構，由兩個玩家進行的大老二遊戲，這個遊戲是由兩個`Client`與一個`Server`所構成。首先，先從Github下載[Release版][Release]的程式，由一台電腦執行`Server.exe`，隨後由另外兩台電腦執行`Client.exe`並同時傳入Server的IPV4位址，方法如下：
 ##### Server 查看IPV4位址 
 ```bash
 ipconfig /all
@@ -77,7 +76,7 @@ ipconfig /all
 git clone https://github.com/swpr0714/C_Final_Project.git
 ```
 
-## 文件目录说明
+## 文件目錄說明
 ```
 File Tree
 ├── bin/
@@ -112,8 +111,11 @@ File Tree
 ```
 
 ### 建置
-
-進入`.\build`資料夾，使用`makefile`進行建置。[makefile詳細內容請見此處][makefile-url]
+先從Github Clone此專案的原始碼
+```Bash
+git clone htts://github.com/swpr0714/C_Final_Project.git
+```
+在cmd中進入`.\build`資料夾，使用`makefile`進行建置。[makefile詳細內容請見此處][makefile-url]
 ```bash
 cd .\build
 make All
@@ -160,3 +162,4 @@ Mail: swpr0714@gmail.com
 [cmake-shield]:https://img.shields.io/badge/CMake-064F8C?style=flat-square&logo=cmake&logoColor=white
 [win11-shield]:https://img.shields.io/badge/Windows_11-0078d4?style=flat-square&logo=windows-11&logoColor=white
 [makefile-url]:https://github.com/swpr0714/C_Final_Project/blob/main/build/makefile
+[Release]: https://github.com/swpr0714/C_Final_Project/releases/tag/Release
