@@ -23,6 +23,7 @@
   - [組員名單](#組員名單)
   - [程式介紹與安裝](#程式介紹與安裝)
   - [遊戲規則](#遊戲規則)
+    - [分工清單](#分工清單)
     - [系統配置要求](#系統配置要求)
     - [文件目錄說明](#文件目錄說明)
     - [建置](#建置)
@@ -60,6 +61,71 @@ ipconfig /all
 **6. Flush ( 同花順 )**  
 #### 總共六種牌型，並按照所選牌型出牌。若判斷為合法出牌，傳入伺服器後，便會傳送給另一位玩家，另一位玩家需出同牌型更大的牌或是選擇PASS，若選擇出牌則持續此循環直至有一方選擇PASS，若選擇PASS則另一位玩家可重新選擇出牌的牌型。持續此循環直至其中一方出完所有手牌，則該方獲勝，程式停止。
 
+## 分工清單  
+#### 以下為各組員與其負責編寫的函數
+**B10803144 嚴和楷**
+```C
+/*client_func.c*/
+int chooseType(char *buffer, int *card);
+int single(int *card, char *buffer);
+int pair(int *card, char *buffer);
+int checkStraight(int *card, int *num, int *prev);
+int straight(int *card, char *buffer);
+```
+**B11131005 黃宇**
+```C
+/*client_func.c*/
+typedef struct card{
+    int rank;
+    int suit;
+} Card;
+Card intToCard(int cardNum);
+void convertHand(int* hand, Card* cvrtHand, int handSize);
+int checkFullHouse(int *card, int *num, int *prev);
+int fullHouse(int *card, char *buffer);
+int checkfourOfAKind(int *card, int *num, int *prev);
+int fourOfAKind(int *card, char *buffer);
+int checkFlush(int *card, int *num, int *prev);
+int flush(int *card, char *buffer);
+int gameOver(char *buffer);
+```
+**B11131016 鄧盛文**
+```C
+/*com_setup.c*/
+int* server_setup();
+SOCKET client_setup();
+
+/*poker.c*/
+void swap(int* cardA, int* cardB);
+void Sort(int* arr, int size);
+void printNum(int num);
+void printCard(int* card, int size);
+int int2str(int* card, char* buf, int size);
+int str2int(int* card, char* buf);
+int** shuffle(void);
+int findOrder(int** card, SOCKET* sock);
+
+/*server_func.c*/
+int sendCard(int **card, char *buffer, int client);
+int recvType(int i, char *buffer);
+int recvCard(int client, char *buffer, int **card, int *prev_card, int mode);
+int checkPass(const int mode, int *prev);
+int checkWin(int **card);
+int serverShutdown();
+int serverend(int status, char *buffer);
+
+/*client_func.c*/
+int gameStart(char *buffer);
+int getCard(char *buffer, int *client_card);
+int recvCard(int *client_card, char *buffer);
+int clientShutdown();
+
+/*Server.c*/
+int main()
+
+/*Client.c*/
+int main()
+```
 
 ## 系統配置要求
 
@@ -127,8 +193,13 @@ make All
 此專案使用Git進行版本控制。您可以在Repository參看目前可用版本。
 
 ### 作者
+**B10803144 嚴和楷**  
+Mail: B10803144@mail.ntust.edu.tw  
 
-**鄧盛文**  
+**B11131005 黃宇**  
+Mail: B11131005@mail.ntust.edu.tw  
+
+**B11131016 鄧盛文**  
 Github: https://github.com/swpr0714  
 Mail: swpr0714@gmail.com
 
