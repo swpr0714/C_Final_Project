@@ -1,3 +1,6 @@
+/*************************************/
+/*以下部分至第52行為B11131016鄧盛文所寫*/
+/*************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,6 +50,9 @@ int recvCard(int* client_card, char* buffer) {
     clbuf;
     return 0;
 }
+/***************************************/
+/*以下部分至第301行為B10803144嚴和楷所寫*/
+/***************************************/
 
 int chooseType(char* buffer, int* card) {
     clbuf;
@@ -299,7 +305,30 @@ pass:
     clbuf;
     return 0;
 }
+/*********************************/
+/*以下部分至最後為B11131005黃宇所寫*/
+/*********************************/
+
+typedef struct {
+    int rank;  // 數值3~2
+    int suit;  // 花色 梅花 方塊 紅心 黑桃
+} Card;
+Card intToCard(int cardNum) {
+    Card card;
+    card.suit = cardNum / 13;
+    card.rank = cardNum % 13;
+    return card;
+}
+void convertHand(int* hand, Card* cvrtHand, int handSize) {
+    for (int i = 0; i < handSize; i++) {
+        cvrtHand[i] = intToCard(hand[i]);
+    }
+}
 int checkFullHouse(int* card, int* num, int* prev) {
+    Card cNum[5];
+    Card cPrev[5];
+    convertHand(num, cCard, 5);
+    convertHand(prev, cPrev, 5);
     for (int i = 0; i < 5; i++) {
         for (int j = i + 1; j < 5; j++) {
             if (num[i] == num[j]) {
@@ -307,13 +336,13 @@ int checkFullHouse(int* card, int* num, int* prev) {
             }
         }
     }
-    if (card[num[0] - 1] / 4 != card[num[1] - 1] / 4) {
+    if (cNum[0].rank != cNum[1].rank) {
         return 1;
     }
-    if (card[num[3] - 1] / 4 != card[num[4] - 1] / 4) {
+    if (cNum[3].rank != cNum[4].rank) {
         return 1;
     }
-    if ((card[num[2] - 1] / 4 == card[num[1] - 1] / 4 || card[num[2] - 1] / 4 == card[num[3] - 1] / 4) && card[num[2] - 1] > prev[2]) {
+    if ((cNum[].rank == cNum[1].rank || cNum[2].rank == cNum[3].rank) && num[2] > prev[2]) {
         return 0;
     }
     return 1;
@@ -346,6 +375,9 @@ fullHouse_restart:
             strcat(buffer, " ");
         }
     }
+    for (int i = 0; i < 5; i++) {
+        num[i] = num[i] - 1
+    };
     if (checkFullHouse(card, num, prev)) {
         printf("Please choose again.\n");
         goto fullHouse_restart;
@@ -366,28 +398,31 @@ pass:
     return 0;
 }
 int checkfourOfAKind(int* card, int* num, int* prev) {
+    Card cNum[5];
+    Card cPrev[5];
+    convertHand(num, cCard, 5);
+    convertHand(prev, cPrev, 5);
     int prevkind = 0;
     // A B B B B = 0
     // A A A A B = 1
     for (int i = 0; i < 5; i++) {
         for (int j = i + 1; j < 5; j++) {
             if (num[i] == num[j]) {
-                printf("A\n");
                 return 1;
             }
         }
     }
-    if (prev[0] / 4 == prev[1] / 4) {
+    if (cPrev[0] == cPrev[1]) {
         prevkind = 1;
     }
     // A B B B B
-    if (card[num[0] - 1] / 4 != card[num[1] - 1] / 4) {
+    if (cNum[0].rank != cNum[1].rank) {
         for (int i = 1; i < 4; i++) {
-            if (card[num[i] - 1] / 4 != card[num[i + 1] - 1] / 4) {
+            if (cNum[i].rank != cNum[i + 1].rank) {
                 return 1;
             }
         }
-        if (prevkind == 0 && card[num[4] - 1] < prev[4]) {
+        if (prevkind == 0 && num[4] < prev[4]) {
             return 1;
         } else if (prevkind == 1 && card[num[4] - 1] < prev[3]) {
             return 1;
@@ -397,13 +432,13 @@ int checkfourOfAKind(int* card, int* num, int* prev) {
     // A A A A B
     else {
         for (int i = 0; i < 3; i++) {
-            if (card[num[i] - 1] / 4 != card[num[i + 1] - 1] / 4) {
+            if (cNum[i].rank != cNum[i + 1].rank) {
                 return 1;
             }
         }
-        if (prevkind == 0 && card[num[3] - 1] < prev[4]) {
+        if (prevkind == 0 && num[3] < prev[4]) {
             return 1;
-        } else if (prevkind == 1 && card[num[3] - 1] < prev[3]) {
+        } else if (prevkind == 1 && num[3] < prev[3]) {
             return 1;
         }
         return 0;
@@ -438,6 +473,9 @@ fourofakind_restart:
             strcat(buffer, " ");
         }
     }
+    for (int i = 0; i < 5; i++) {
+        num[i] = num[i] - 1
+    };
     if (checkfourOfAKind(card, num, prev)) {
         printf("Please choose again.\n");
         goto fourofakind_restart;
@@ -458,6 +496,10 @@ pass:
     return 0;
 }
 int checkFlush(int* card, int* num, int* prev) {
+    Card cNum[5];
+    Card cPrev[5];
+    convertHand(num, cCard, 5);
+    convertHand(prev, cPrev, 5);
     for (int i = 0; i < 5; i++) {
         for (int j = i + 1; j < 5; j++) {
             if (num[i] == num[j]) {
@@ -466,11 +508,11 @@ int checkFlush(int* card, int* num, int* prev) {
         }
     }
     for (int i = 0; i < 4; i++) {
-        if (card[num[i + 1] - 1] / 4 - card[num[i] - 1] / 4 != 1 || card[num[i + 1] - 1] % 4 != card[num[i] - 1] % 4) {
+        if (cNum[i + 1].rank - cNum[i].rank != 1 || cNum[i + ].suit != cNum[i].suit) {
             return 1;
         }
     }
-    if (card[num[4] - 1] < prev[4]) {
+    if (num[4] < prev[4]) {
         return 1;
     }
     return 0;
@@ -503,6 +545,9 @@ flush_restart:
             strcat(buffer, " ");
         }
     }
+    for (int i = 0; i < 5; i++) {
+        num[i] = num[i] - 1
+    };
     if (checkFlush(card, num, prev)) {
         printf("Please choose again.\n");
         goto flush_restart;
