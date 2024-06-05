@@ -62,10 +62,10 @@ int main(int argc, char** argv) {
             if (mode == 0) {
                 mode = recvType(i, buffer);
                 if (mode == -1) {
-                    goto end;
+                    goto closeserver;
                 }
             } else if (mode == -1) {
-                goto end;
+                goto closeserver;
             } else {
                 clbuf;
                 itoa(mode, buffer, 10);
@@ -75,13 +75,13 @@ int main(int argc, char** argv) {
             // Recv clients cards and delete from the cardset
             status = recvCard(i, buffer, card, prev_card, mode);
             if (status == -1) {
-                goto end;
+                goto closeserver;
             }
             // Check if the player is win
             status = checkWin(card);
             if (status) {
                 end(status, buffer);
-                goto end;
+                goto closeserver;
             }
             // Ask player continue
             clbuf;
@@ -91,14 +91,14 @@ int main(int argc, char** argv) {
             status = sendCard(card, buffer, i);
             if (status == -1) {
                 printf("Send fail");
-                goto end;
+                goto closeserver;
             }
             // Check if the player pass, if yes, set mode = 0
             mode = checkPass(mode, prev_card);
             printf("user %d finish\n", i);
         }
     }
-end:
+closeserver:
     printf("Server will shutdown in 5 seconds.\n");
     for (int i = 5; i > 0; i--) {
         printf("%d...\n", i);

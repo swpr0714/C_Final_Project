@@ -5,4 +5,4 @@ int recvCard(int client, char *buffer, int **card, int *prev_card, int mode);
 int checkPass(const int mode, int *prev);
 int checkWin(int **card);
 int serverShutdown();
-int end(int status, char *buffer);
+int serverend(int status, char *buffer);

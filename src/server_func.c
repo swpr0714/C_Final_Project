@@ -134,7 +134,7 @@ int serverShutdown() {
     return 0;
 }
 
-int end(int status, char* buffer) {
+int serverend(int status, char* buffer) {
     clbuf;
     switch (status) {
         case 0:
